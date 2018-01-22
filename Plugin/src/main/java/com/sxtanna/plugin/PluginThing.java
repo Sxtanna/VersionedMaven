@@ -1,12 +1,13 @@
 package com.sxtanna.plugin;
 
-import com.google.common.base.Preconditions;
 import com.sxtanna.ver.Compat;
 import com.sxtanna.ver.Compat1_10;
 import com.sxtanna.ver.Compat1_8;
 import com.sxtanna.ver.Compat1_9;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Optional;
 
 public final class PluginThing extends JavaPlugin {
 
@@ -39,11 +40,14 @@ public final class PluginThing extends JavaPlugin {
                 break;
         }
 
-        Bukkit.getOnlinePlayers().forEach(player -> getCompat().sendActionBar(player, "Hello!!"));
+        getCompat().ifPresent(it -> Bukkit.getOnlinePlayers().forEach(player -> it.sendActionBar(player, "Hello!!")));
+
     }
 
     @Override
     public void onDisable() {
+        instance = null;
+
         ver = null;
         compat = null;
     }
@@ -53,9 +57,8 @@ public final class PluginThing extends JavaPlugin {
         return ver;
     }
 
-    public Compat getCompat() {
-        Preconditions.checkNotNull(compat, "Compat for this version is unavailable");
-        return compat;
+    public Optional<Compat> getCompat() {
+        return Optional.ofNullable(compat);
     }
 
 
